@@ -15,7 +15,7 @@ func New() (*sqlx.DB, error) {
 	port := lib.GetEnv("DB_PORT")
 	dbname := lib.GetEnv("DB_NAME")
 
-	db, err := sqlx.Connect("mysql", username+":"+password+"@tcp("+host+":"+port+")/"+dbname)
+	db, err := sqlx.Connect("mysql", username+":"+password+"@tcp("+host+":"+port+")/"+dbname+"?parseTime=true")
 	if err != nil {
 		log.Fatalln(err)
 	}

@@ -4,9 +4,12 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/fazarrahman/cognotiv/auth"
 	"github.com/fazarrahman/cognotiv/config/mysqldb"
+	auth_rest "github.com/fazarrahman/cognotiv/delivery/authrest"
 	delivery_rest "github.com/fazarrahman/cognotiv/delivery/rest"
 	order_repo_db "github.com/fazarrahman/cognotiv/domain/order/repository/mysqldb"
+	user_repo_db "github.com/fazarrahman/cognotiv/domain/user/repository/mysqldb"
 	"github.com/fazarrahman/cognotiv/lib"
 	"github.com/fazarrahman/cognotiv/service"
 	"github.com/gin-gonic/gin"
@@ -22,8 +25,13 @@ func main() {
 	}
 	log.Println("Database has been initialized")
 
+	auth.Init()
+	log.Println("Oauth has been initialized")
+
 	orderDb := order_repo_db.New(db)
-	svc := service.New(orderDb)
+	userDb := user_repo_db.New(db)
+
+	svc := service.New(orderDb, userDb)
 
 	g := gin.Default()
 	g.GET("/ping",
@@ -31,6 +39,7 @@ func main() {
 			c.JSON(http.StatusOK, "pong")
 		})
 	delivery_rest.New(svc).Register(g.Group("/api"))
+	auth_rest.New(svc).Register(g.Group("/api/auth"))
 
 	g.Run(":" + lib.GetEnv("APP_PORT"))
 }

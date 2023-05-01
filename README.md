@@ -1,10 +1,36 @@
 # cognotiv
 
-# MySQL create tables query
-CREATE TABLE customers (
+# Create new MySQL database 
+#### Create new MySQL database. You can name it anything, for example : cognotivdb
+
+# Fill .env file with these config
+You can change the config to your mysql server settings
+
+APP_PORT=8080
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=cognotivdb
+DB_USERNAME=root
+DB_PASSWORD=
+AUTH_CLIENT_ID=000000
+AUTH_SECRET=999999
+APP_DOMAIN=http://localhost
+
+# MySQL create tables queries
+CREATE TABLE roles (
+	id bigint NOT NULL AUTO_INCREMENT,
+	code VARCHAR(255) NOT NULL,
+	name varchar(255) NOT NULL,
+	created_at timestamp NOT NULL,
+	updated_at timestamp NULL,
+	PRIMARY KEY(`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+CREATE TABLE users (
 	id bigint NOT NULL AUTO_INCREMENT,
 	username VARCHAR(100) NOT NULL,
-	password VARCHAR(255) NOT NULL,
+	`password` VARCHAR(255) NOT NULL,
+	role_id bigint NOT NULL,
 	first_name VARCHAR(255) NOT NULL,
 	last_name VARCHAR(255) NULL,
 	address VARCHAR(255) NULL,
@@ -12,7 +38,9 @@ CREATE TABLE customers (
 	email VARCHAR(255) NULL,
 	created_at timestamp NOT NULL,
 	updated_at timestamp NULL,
-	PRIMARY KEY(`id`)
+	PRIMARY KEY(`id`),
+	KEY `FK_users_roles` (`role_id`),
+  	CONSTRAINT `FK_users_roles` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 CREATE TABLE products (
@@ -25,16 +53,17 @@ CREATE TABLE products (
 	PRIMARY KEY(`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
+
 CREATE TABLE orders (
 	id bigint NOT NULL AUTO_INCREMENT,
-	customer_id bigint NOT NULL,
+	user_id bigint NOT NULL,
 	order_date timestamp NOT NULL,
 	status int NOT NULL,
 	created_at timestamp NOT NULL,
 	updated_at timestamp NULL,
 	PRIMARY KEY(`id`),
-	KEY `FK_customers` (`customer_id`),
-  	CONSTRAINT `FK_customers` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`)
+	KEY `FK_users` (`user_id`),
+  	CONSTRAINT `FK_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 CREATE TABLE order_details (
@@ -51,21 +80,71 @@ CREATE TABLE order_details (
   	CONSTRAINT `FK_order_detail_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
-# Endpoints
+# Insert initial data To MySQL DB
+insert into roles (code, name, created_at)
+values ('ADMIN', 'admin', NOW())
+
+insert into roles (code, name, created_at)
+values ('CUSTOMER', 'customer', NOW())
+
+insert into products (name, price, created_at)
+values ('PS5', 7000000, NOW())
+
+insert into products (name, price, created_at)
+values ('TWS', 1000000, NOW())
+
+# API Endpoints
+## Sign Up New User
+### Curl :
+curl --location 'http://localhost:8080/api/auth/signup' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "username": "fazar2",
+    "password": "fazar123",
+    "firstName": "Fazar",
+    "lastName": "Rahman",
+    "email": "fazar.rahman@gmail.com",
+    "roleId": 2
+}'
+
+## User login
+### Curl : 
+curl --location 'http://localhost:8080/api/auth/login' \
+--header 'Content-Type: application/json' \
+--data '{
+    "username": "fazar2",
+    "password": "fazar123"
+}'
+
+Note : The response of user login will contain access token. Copy it
+
+## Token Info
+### Curl : 
+curl --location 'http://localhost:8080/api/auth/tokeninfo' \
+--header 'Authorization: Bearer {Access token}'
+
 ## Post Order
 ### Curl :
 curl --location 'localhost:8080/api/order' \
 --header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {Access token}' \
 --data '{
-    "customerId":1,
+    "userId":1,
     "details": [
         {
             "productId": 1,
-            "quantity": 1
+            "quantity": 2
         },
         {
             "productId": 2,
-            "quantity": 1
+            "quantity": 3
         }
     ]
 }'
+
+## Get Order detail with product list
+### Curl :
+curl --location 'localhost:8080/api/order' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {Access token}' \
+--data ''

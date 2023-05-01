@@ -14,6 +14,7 @@ const (
 	InternalServerErrorCode   string = "INTERNAL_SERVER_ERROR"
 	BadRequestCode            string = "BAD_REQUEST"
 	ResourceAlreadyExistsCode string = "RESOURCE_ALREADY_EXISTS"
+	UnauthorizedCode          string = "UNAUTHORIZED"
 )
 
 func NotFound(message string) *Error {
@@ -30,4 +31,8 @@ func BadRequest(message string) *Error {
 
 func ResourceAlreadyExist(message string) *Error {
 	return &Error{StatusCode: http.StatusConflict, Code: ResourceAlreadyExistsCode, Message: message}
+}
+
+func Unauthorized(message string) *Error {
+	return &Error{StatusCode: http.StatusUnauthorized, Code: UnauthorizedCode, Message: message}
 }
