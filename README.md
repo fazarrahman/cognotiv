@@ -95,6 +95,12 @@ values ('TWS', 1000000, NOW())
 
 # API Endpoints
 ## Sign Up New User
+Role id 1 is admin
+Role id 2 is customer
+
+Login with admin user, you can get all active orders
+Login with customer, you can only get your own orders
+
 ### Curl :
 curl --location 'http://localhost:8080/api/auth/signup' \
 --header 'Content-Type: application/json' \
@@ -108,6 +114,8 @@ curl --location 'http://localhost:8080/api/auth/signup' \
 }'
 
 ## User login
+The response of user login will contain access token. Copy it
+
 ### Curl : 
 curl --location 'http://localhost:8080/api/auth/login' \
 --header 'Content-Type: application/json' \
@@ -116,10 +124,10 @@ curl --location 'http://localhost:8080/api/auth/login' \
     "password": "fazar123"
 }'
 
-Note : The response of user login will contain access token. Copy it
-
 ## Token Info
 ### Curl : 
+Paste the access token to authorization header
+
 curl --location 'http://localhost:8080/api/auth/tokeninfo' \
 --header 'Authorization: Bearer {Access token}'
 
@@ -143,6 +151,8 @@ curl --location 'localhost:8080/api/order' \
 }'
 
 ## Get Order detail with product list
+Paste the access token to authorization header
+
 ### Curl :
 curl --location 'localhost:8080/api/order' \
 --header 'Content-Type: application/json' \
