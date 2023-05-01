@@ -93,6 +93,9 @@ values ('PS5', 7000000, NOW())
 insert into products (name, price, created_at)
 values ('TWS', 1000000, NOW())
 
+# Run App
+run this command : go run main.go
+
 # API Endpoints
 ## Sign Up New User
 Role id 1 is admin
