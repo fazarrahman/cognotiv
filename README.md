@@ -3,6 +3,15 @@
 # Create new MySQL database 
 #### Create new MySQL database. You can name it anything, for example : cognotivdb
 
+# Database Scheme
+You can find the database scheme file with file name Database scheme.png
+## Description
+The user table consists of username, password, email and role id columns. Every user has their own role which is ADMIN or CUSTOMER.
+The customer user can get his/her own orders data while admin user can get all active orders.
+The order table has user_id, order_date and status columns.
+The order detail contains product_id and the product buying quantity information.
+The product table has product name, price and product description information.
+
 # Fill .env file with these config
 You can change the config to your mysql server settings
 
